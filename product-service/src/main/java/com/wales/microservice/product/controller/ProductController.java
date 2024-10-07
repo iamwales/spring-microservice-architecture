@@ -3,6 +3,7 @@ package com.wales.microservice.product.controller;
 import com.wales.microservice.product.dto.ProductRequest;
 import com.wales.microservice.product.dto.ProductResponse;
 import com.wales.microservice.product.service.ProductService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -12,6 +13,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/products")
+@Tag(name = "Products Service")
 public class ProductController {
 
     private final ProductService productService;
