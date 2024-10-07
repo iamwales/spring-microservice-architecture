@@ -1,5 +1,6 @@
 package com.wales.microservice.order.services;
 
+import com.wales.microservice.order.client.InventoryClient;
 import com.wales.microservice.order.dto.OrderRequest;
 import com.wales.microservice.order.dto.OrderResponse;
 import com.wales.microservice.order.model.Order;
@@ -14,28 +15,33 @@ import java.util.UUID;
 public class OrderService {
 
     private final OrderRepository orderRepository;
+    private final InventoryClient inventoryClient;
 
     public OrderResponse placeOrder(OrderRequest orderRequest) {
-        System.out.println("orderRequest " + orderRequest);
-        Order order = Order.builder()
-                .orderNumber(UUID.randomUUID().toString())
-                .price(orderRequest.price())
-                .skuCode(orderRequest.skuCode())
-                .quantity(orderRequest.quantity())
-                .build();
 
-        System.out.println("order " + order);
+        var isOderInStock = inventoryClient.isInStock(orderRequest.skuCode(), orderRequest.quantity());
 
-        var createdOrder = orderRepository.save(order);
+        if (isOderInStock) {
+            Order order = Order.builder()
+                    .orderNumber(UUID.randomUUID().toString())
+                    .price(orderRequest.price())
+                    .skuCode(orderRequest.skuCode())
+                    .quantity(orderRequest.quantity())
+                    .build();
 
-        System.out.println("createdOrder "+ createdOrder);
+            var createdOrder = orderRepository.save(order);
 
-        return OrderResponse.builder()
-                .id(createdOrder.getId())
-                .orderNumber(createdOrder.getOrderNumber())
-                .price(createdOrder.getPrice())
-                .skuCode(createdOrder.getSkuCode())
-                .quantity(createdOrder.getQuantity())
-                .build();
+            return OrderResponse.builder()
+                    .id(createdOrder.getId())
+                    .orderNumber(createdOrder.getOrderNumber())
+                    .price(createdOrder.getPrice())
+                    .skuCode(createdOrder.getSkuCode())
+                    .quantity(createdOrder.getQuantity())
+                    .build();
+        } else {
+            throw new RuntimeException("Product with SkuCode " + orderRequest.skuCode() + "is not in stock");
+        }
+
+
     }
 }
