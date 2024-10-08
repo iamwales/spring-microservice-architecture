@@ -23,6 +23,7 @@ public class ProductService {
                 .name(productRequest.name())
                 .description(productRequest.description())
                 .price(productRequest.price())
+                .skuCode(productRequest.skuCode())
                 .build();
 
         Product savedProduct = productRepository.save(product);
@@ -34,6 +35,7 @@ public class ProductService {
                 .name(savedProduct.getName())
                 .description(savedProduct.getDescription())
                 .price(savedProduct.getPrice())
+                .skuCode(savedProduct.getSkuCode())
                 .build();
     }
 
@@ -41,7 +43,7 @@ public class ProductService {
     public List<ProductResponse> getAllProducts() {
         return productRepository.findAll()
                 .stream()
-                .map(product -> new ProductResponse(product.getId(), product.getName(), product.getDescription(), product.getPrice()))
+                .map(product -> new ProductResponse(product.getId(), product.getName(), product.getDescription(), product.getSkuCode(), product.getPrice()))
                 .toList();
     }
 }
