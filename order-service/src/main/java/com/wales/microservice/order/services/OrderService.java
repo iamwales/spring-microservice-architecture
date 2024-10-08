@@ -1,6 +1,7 @@
 package com.wales.microservice.order.services;
 
-import com.wales.microservice.order.client.InventoryClient;
+import com.wales.microservice.order.client.InventoryClientWithOpenFeign;
+import com.wales.microservice.order.client.InventoryClientWithRestClient;
 import com.wales.microservice.order.dto.OrderRequest;
 import com.wales.microservice.order.dto.OrderResponse;
 import com.wales.microservice.order.model.Order;
@@ -15,11 +16,12 @@ import java.util.UUID;
 public class OrderService {
 
     private final OrderRepository orderRepository;
-    private final InventoryClient inventoryClient;
+    private final InventoryClientWithOpenFeign inventoryClientWithOpenFeign;
+    private final InventoryClientWithRestClient inventoryClientWithRestClient;
 
     public OrderResponse placeOrder(OrderRequest orderRequest) {
 
-        var isOderInStock = inventoryClient.isInStock(orderRequest.skuCode(), orderRequest.quantity());
+        var isOderInStock = inventoryClientWithRestClient.isInStock(orderRequest.skuCode(), orderRequest.quantity());
 
         if (isOderInStock) {
             Order order = Order.builder()
