@@ -26,9 +26,12 @@ public class OrderService {
 
     public OrderResponse placeOrder(OrderRequest orderRequest) {
 
+        System.out.println("I got here " + orderRequest);
+
         var isOderInStock = inventoryClientWithRestClient.isInStock(orderRequest.skuCode(), orderRequest.quantity());
 
         if (isOderInStock) {
+            System.out.println("order is in stock");
             Order order = Order.builder()
                     .orderNumber(UUID.randomUUID().toString())
                     .price(orderRequest.price())
@@ -39,8 +42,12 @@ public class OrderService {
             var createdOrder = orderRepository.save(order);
 
             // Send the message to Kafka topic
-            OrderPlacedEvent orderPlacedEvent = new OrderPlacedEvent(order.getOrderNumber(),
-                    orderRequest.userDetails().email());
+            OrderPlacedEvent orderPlacedEvent = new OrderPlacedEvent();
+            orderPlacedEvent.setOrderNumber(order.getOrderNumber());
+            orderPlacedEvent.setEmail(orderRequest.userDetails().email());
+            orderPlacedEvent.setFirstName(orderRequest.userDetails().firstName());
+            orderPlacedEvent.setLastName(orderRequest.userDetails().lastName());
+
             log.info("Start - Sending OrderPlacedEvent {} to Kafka topic order-placed", orderPlacedEvent);
             kafkaTemplate.send("order-placed", orderPlacedEvent);
             log.info("End - Sending OrderPlacedEvent {} to Kafka topic order-placed", orderPlacedEvent);
