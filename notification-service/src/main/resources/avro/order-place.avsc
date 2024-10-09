@@ -1,0 +1,13 @@
+// to avoid using duplicate class for OrderPlacedEvent in order and notification service
+// we are using schema registry.
+{
+  "type": "record",
+  "name": "OrderPlacedEvent",
+  "namespace": "com.wales.microservice.order.events",
+  "fields": [
+    { "name": "orderNumber", "type": "string" },
+    { "name": "email", "type": "string" },
+    { "name": "firstName", "type": "string" },
+    { "name": "lastName", "type": "string" }
+  ]
+}
