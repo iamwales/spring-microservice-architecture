@@ -1,6 +1,8 @@
 package com.wales.microservice.order.config;
 
 import com.wales.microservice.order.client.InventoryClientWithRestClient;
+import io.micrometer.observation.ObservationRegistry;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.ClientHttpRequestFactories;
 import org.springframework.boot.web.client.ClientHttpRequestFactorySettings;
@@ -14,10 +16,13 @@ import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 import java.time.Duration;
 
 @Configuration
+@RequiredArgsConstructor
 public class RestClientConfig {
 
     @Value("${inventory.url}")
     private String inventoryServiceUrl;
+
+    private final ObservationRegistry observationRegistry;
 
     @Bean
     public InventoryClientWithRestClient inventoryClientWithRestClient() {
@@ -25,6 +30,7 @@ public class RestClientConfig {
                 .baseUrl(inventoryServiceUrl)
                 // For timeout test
                 .requestFactory(getClientRequestFactory())
+                .observationRegistry(observationRegistry)
                 .build();
 
         var restClientAdapter = RestClientAdapter.create(restClient);
